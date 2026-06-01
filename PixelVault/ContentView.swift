@@ -60,6 +60,8 @@ struct ContentView: View {
         }
     }
 
+    
+    //HStack for Text and Spacer
     private func infoRow(_ title: String, _ value: String) -> some View {
         HStack {
             Text(title)
