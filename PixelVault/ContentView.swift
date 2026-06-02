@@ -8,40 +8,67 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var appState = AppState()
 
-    @State private var statusText = "Ready"
-
-    private let photoService = PhotoLibraryService()
+    private let uploadManager = UploadManager()
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
+                VStack(spacing: 8) {
+                    Text("PixelVault")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
 
-                Text("PixelVault")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    Text("iPhone photo relay")
+                        .foregroundStyle(.secondary)
+                }
 
-                Button("Upload New Photos") {
+                VStack(spacing: 12) {
+                    infoRow("Pending on Pixel", "\(appState.pendingCount)")
+                    infoRow("Ready to Delete", "\(appState.archivedCount)")
+                    infoRow("Last Upload", appState.lastUploadText)
+                }
+                .padding()
+                .background(.thinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+
+                Button {
                     Task {
-                        statusText = "Checking permissions..."
-
-                        let granted = await photoService.requestPermission()
-
-                        if granted {
-                            let count = photoService.fetchAssetCount()
-                            statusText = "Found \(count) photos/videos"
-                        } else {
-                            statusText = "Photos permission denied"
-                        }
+                        await uploadManager.uploadNewPhotos(appState: appState)
                     }
+                } label: {
+                    Text(appState.isWorking ? "Working..." : "Upload New Photos")
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(appState.isWorking)
 
-                Text(statusText)
+                Button {
+                    appState.statusText = "Cleanup coming next"
+                } label: {
+                    Text("Clean Up Archived Photos")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .disabled(appState.isWorking)
+
+                Text(appState.statusText)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
 
                 Spacer()
             }
             .padding()
+        }
+    }
+
+    private func infoRow(_ title: String, _ value: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(value)
+                .fontWeight(.semibold)
         }
     }
 }
