@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var appState = AppState()
 
     private let uploadManager = UploadManager()
+    private let cleanupManager = CleanupManager()
 
     var body: some View {
         NavigationStack {
