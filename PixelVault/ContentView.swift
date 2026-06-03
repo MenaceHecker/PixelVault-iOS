@@ -46,7 +46,9 @@ struct ContentView: View {
                 .disabled(appState.isWorking)
 
                 Button {
-                    appState.statusText = "Cleanup coming next"
+                    Task {
+                        await cleanupManager.cleanupArchivedPhotos(appState: appState)
+                    }
                 } label: {
                     Text("Clean Up Archived Photos")
                         .frame(maxWidth: .infinity)
