@@ -61,4 +61,35 @@ final class PixelVaultAPI {
             throw URLError(.badServerResponse)
         }
     }
+    
+    func fetchArchivedAssets() async throws -> [ArchivedAsset] {
+        let url = baseURL.appendingPathComponent("/api/archived")
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let http = response as? HTTPURLResponse,
+              (200...299).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+
+        return try JSONDecoder().decode([ArchivedAsset].self, from: data)
+    }
+
+    func markIphoneDeleted(ids: [String]) async throws {
+        let url = baseURL.appendingPathComponent("/api/iphone-deleted")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body = ["ids": ids]
+        request.httpBody = try JSONEncoder().encode(body)
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+
+        guard let http = response as? HTTPURLResponse,
+              (200...299).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+    }
 }
