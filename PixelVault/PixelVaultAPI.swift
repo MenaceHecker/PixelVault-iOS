@@ -11,6 +11,7 @@ final class PixelVaultAPI {
     static let shared = PixelVaultAPI()
 
     private let baseURL = URL(string: "https://pixel-vault-two.vercel.app")!
+    private let vaultKey = "YOUR_SECRET_KEY"
 
     func uploadAsset(
         data: Data,
@@ -26,6 +27,7 @@ final class PixelVaultAPI {
 
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue(vaultKey, forHTTPHeaderField: "X-Vault-Key")
 
         var body = Data()
 
@@ -65,7 +67,10 @@ final class PixelVaultAPI {
     func fetchArchivedAssets() async throws -> [ArchivedAsset] {
         let url = baseURL.appendingPathComponent("/api/archived")
 
-        let (data, response) = try await URLSession.shared.data(from: url)
+        var request = URLRequest(url: url)
+        request.setValue(vaultKey, forHTTPHeaderField: "X-Vault-Key")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let http = response as? HTTPURLResponse,
               (200...299).contains(http.statusCode) else {
@@ -81,6 +86,7 @@ final class PixelVaultAPI {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(vaultKey, forHTTPHeaderField: "X-Vault-Key")
 
         let body = ["ids": ids]
         request.httpBody = try JSONEncoder().encode(body)
