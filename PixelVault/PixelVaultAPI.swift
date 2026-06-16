@@ -7,6 +7,12 @@
 
 import Foundation
 
+struct StatusResponse: Codable {
+    let pendingCount: Int
+    let archivedCount: Int
+    let lastSync: String?
+}
+
 final class PixelVaultAPI {
     static let shared = PixelVaultAPI()
 
@@ -97,5 +103,21 @@ final class PixelVaultAPI {
               (200...299).contains(http.statusCode) else {
             throw URLError(.badServerResponse)
         }
+    }
+
+    func fetchStatus() async throws -> StatusResponse {
+        let url = baseURL.appendingPathComponent("/api/status")
+
+        var request = URLRequest(url: url)
+        request.setValue(vaultKey, forHTTPHeaderField: "X-Vault-Key")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let http = response as? HTTPURLResponse,
+              (200...299).contains(http.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+
+        return try JSONDecoder().decode(StatusResponse.self, from: data)
     }
 }
