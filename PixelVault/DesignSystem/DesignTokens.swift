@@ -86,3 +86,22 @@ extension View {
         self.shadow(color: shadow.color, radius: shadow.radius, x: shadow.x, y: shadow.y)
     }
 }
+
+// MARK: - Typography Tokens
+
+enum Typography {
+    /// Large hero / display text
+    static let display:  Font = .system(size: 34, weight: .bold,     design: .rounded)
+    /// Section titles
+    static let title:    Font = .system(size: 22, weight: .semibold,  design: .rounded)
+    /// Card / list headings
+    static let headline: Font = .system(size: 17, weight: .semibold,  design: .default)
+    /// Standard body copy
+    static let body:     Font = .system(size: 17, weight: .regular,   design: .default)
+    /// Supporting body text
+    static let subhead:  Font = .system(size: 15, weight: .regular,   design: .default)
+    /// Metadata / labels
+    static let caption:  Font = .system(size: 12, weight: .regular,   design: .default)
+    /// Small badges / tags
+    static let badge:    Font = .system(size: 11, weight: .semibold,  design: .rounded)
+}
