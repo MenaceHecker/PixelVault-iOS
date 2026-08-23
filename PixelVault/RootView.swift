@@ -72,11 +72,11 @@ struct PlaceholderView: View {
 
                 Text(title)
                     .font(.title2.weight(.semibold))
-                    .foregroundStyle(.pvTextPrimary)
+                    .foregroundStyle(Color.pvTextPrimary)
 
                 Text("Coming in a future phase")
                     .font(.subheadline)
-                    .foregroundStyle(.pvTextSecondary)
+                    .foregroundStyle(Color.pvTextSecondary)
             }
             .navigationTitle(title)
         }
